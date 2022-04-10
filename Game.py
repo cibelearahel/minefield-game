@@ -1,7 +1,4 @@
-import pygame
 import random
-import os
-import platform
 from Config import *
 from Bomb import Bomb
 from Flag import Flag
@@ -14,8 +11,8 @@ class Game:
         pygame.display.set_caption("Minesweeper")
 
         sub = side_square - space_square
-        bomb = Bomb(sub).image
-        flag = Flag(sub).image
+        bomb = Bomb(sub).image1
+        flag = Flag(sub).image2
 
         def generate_square():
             for i in range(qtd_square):
@@ -39,23 +36,23 @@ class Game:
                     columns = random.randrange(0, qtd_square)
                 field[rows][columns] = True
 
-        def controlMouse():
+        def control_mouse():
             mouse = pygame.mouse.get_pos()
-            searchX = side_square + margin
+            search_x = side_square + margin
             column = 0
 
-            while searchX < mouse[0]:
+            while search_x < mouse[0]:
                 column += 1
-                searchX += side_square + space_square
-            searchY = side_square + margin
-            Row = 0
-            while searchY < mouse[1]:
-                Row += 1
-                searchY += side_square + space_square
+                search_x += side_square + space_square
+            search_y = side_square + margin
+            row = 0
+            while search_y < mouse[1]:
+                row += 1
+                search_y += side_square + space_square
 
-            return Row, column
+            return row, column
 
-        def UpdateQtdBombs(row_square, col_square, cord_x, cord_y, call):
+        def update_qtd_bombs(row_square, col_square, cord_x, cord_y, call):
             cont = 0
             for k in range(-1, 2):
                 for n in range(-1, 2):
@@ -63,7 +60,7 @@ class Game:
                         if field[row_square + k][col_square + n]:
                             cont += 1
 
-            createText(cont, cord_x, cord_y, side_square)
+            create_text(cont, cord_x, cord_y, side_square)
             open_square.append((row_square, col_square))
 
             if cont == 0:
@@ -73,12 +70,12 @@ class Game:
                             if not ((row_square + p, col_square + q) in call) and not (
                                     field[row_square + p][col_square + q]):
                                 call.append((row_square + p, col_square + q))
-                                UpdateQtdBombs(row_square + p, col_square + q,
-                                               cord_x + (q * (side_square + space_square)),
-                                               cord_y + (p * (side_square + space_square)),
-                                               call)
+                                update_qtd_bombs(row_square + p, col_square + q,
+                                                 cord_x + (q * (side_square + space_square)),
+                                                 cord_y + (p * (side_square + space_square)),
+                                                 call)
 
-        def createText(cont, coord_x, coord_y, sq):
+        def create_text(cont, coord_x, coord_y, sq):
             global color
             pygame.draw.rect(screen, WHITE, (coord_x, coord_y, sq, sq))
             if cont == 1:
@@ -100,7 +97,7 @@ class Game:
                 screen.blit(text, position)
             pygame.display.update()
 
-        def Lost():
+        def lost():
             for r in range(qtd_square):
                 for s in range(qtd_square):
                     if field[r][s]:
@@ -114,22 +111,23 @@ class Game:
 
             text = font_lost.render("YOU LOST!", True, RED)
             screen.blit(text,
-                        (size[0] // 2 - (text.get_rect().width // 2), size[1 // 2] - text.get_rect().height*5))
+                        (size[0] // 2 - (text.get_rect().width // 2), size[1 // 2] - text.get_rect().height * 5))
             end()
 
-        def Win():
+        def win():
+
             for t in range(qtd_square):
                 for u in range(qtd_square):
                     if not ((t, u) in open_square) and not (field[i][j]):
-                        UpdateQtdBombs(t, u, margin + (u * (side_square + space_square)),
-                                       margin + (t * (side_square + space_square)), [])
+                        update_qtd_bombs(t, u, margin + (u * (side_square + space_square)),
+                                         margin + (t * (side_square + space_square)), [])
 
             text = font_win.render("YOU WON!", True, GREEN)
             screen.blit(text,
-                        (size[0] // 2 - (text.get_rect().width // 2), size[1] // 2 - text.get_rect().height*5))
+                        (size[0] // 2 - (text.get_rect().width // 2), size[1] // 2 - text.get_rect().height * 5))
             end()
 
-        def finishedFlag():
+        def finished_flag():
             text = font_flag.render("Flags over!", True, RED)
             screen.blit(text,
                         (size[0] // 2 - (text.get_rect().width // 2), size[1] // 2 - (text.get_rect().height // 2)))
@@ -154,17 +152,17 @@ class Game:
                         pygame.quit()
 
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        row, col = controlMouse()
+                        row, col = control_mouse()
                         if not ((row, col) in with_flag) or with_flag[(row, col)] is False:
                             if not (field[row][col]):
                                 x = margin + (side_square * col) + (space_square * col)
                                 y = margin + (side_square * row) + (space_square * row)
-                                UpdateQtdBombs(row, col, x, y, [])
+                                update_qtd_bombs(row, col, x, y, [])
                             else:
-                                Lost()
+                                lost()
 
                     elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-                        row, col = controlMouse()
+                        row, col = control_mouse()
                         if not ((row, col) in open_square):
                             if (row, col) in with_flag:
                                 if with_flag[(row, col)]:
@@ -197,8 +195,8 @@ class Game:
                                 flags -= 1
 
                                 if corrects == qtd_mines:
-                                    Win()
+                                    win()
                                 if flags == 0:
-                                    finishedFlag()
+                                    finished_flag()
 
         game_loop()
