@@ -1,2 +1,3 @@
 # minefield-game
-minefield in pygame using SOLID principles
+minesweeper in pygame using SOLID principles
+team: Beatriz Damasceno, Cibele Arahel and Débora Barros.
