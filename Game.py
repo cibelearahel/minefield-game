@@ -1,3 +1,4 @@
+from distutils.command.config import config
 import random
 from Config import *
 from Bomb import Bomb
@@ -7,17 +8,28 @@ from Flag import Flag
 class Game:
     def __init__(self):
         pygame.init()
-        screen = pygame.display.set_mode(size)
+        screen = pygame.display.set_mode(size)      
+        screen.fill(MINT_GREEN)
+        pygame.display.flip()         
+        text = font_standard.render("MINESWEEPER", True, MINT)
+        screen.blit(text,
+                    (size[0] // 2 - (text.get_rect().width // 2), size[1 // 2] - text.get_rect().height * 5.5))
+        pygame.display.update()
+        pygame.time.wait(3000)
+        
         pygame.display.set_caption("Minesweeper")
+
+        screen = pygame.display.set_mode(size)      
+        screen.fill(MINT_GREEN)
 
         sub = side_square - space_square
         bomb = Bomb(sub).image1
         flag = Flag(sub).image2
-
+        
         def generate_square():
             for i in range(qtd_square):
                 for j in range(qtd_square):
-                    pygame.draw.rect(screen, BLUE, parameter)
+                    pygame.draw.rect(screen, MINT, parameter)
                     parameter[0] += side_square + space_square
                     pygame.display.flip()
                 parameter[1] += side_square + space_square
@@ -91,10 +103,10 @@ class Game:
             elif cont == 8:
                 color = BLACK
             if cont != 0:
-                text = font.render(str(cont), True, color)
-                position = (coord_x + (sq // 2) - (text.get_rect().width // 2), coord_y + (sq // 2) - (
+                text_numbers = font.render(str(cont), True, color)
+                position = (coord_x + (sq // 2) - (text_numbers.get_rect().width // 2), coord_y + (sq // 2) - (
                         text.get_rect().height // 2))
-                screen.blit(text, position)
+                screen.blit(text_numbers, position)
             pygame.display.update()
 
         def lost():
@@ -109,9 +121,15 @@ class Game:
                                                margin + (side_square * r) + (space_square * r)))
                             pygame.display.update()
 
-            text = font_lost.render("YOU LOST!", True, RED)
-            screen.blit(text,
-                        (size[0] // 2 - (text.get_rect().width // 2), size[1 // 2] - text.get_rect().height * 5))
+            pygame.time.wait(1500)
+            surface = pygame.display.set_mode(size)       
+            surface.fill(MINT_GREEN)
+            pygame.display.flip()         
+            defeat_text = font_standard.render("YOU LOSE :[", True, RED)
+            screen.blit(defeat_text,
+                        (size[0] // 2 - (defeat_text.get_rect().width // 2),
+                         size[1 // 2] - defeat_text.get_rect().height * 5.5))
+
             end()
 
         def win():
@@ -122,20 +140,32 @@ class Game:
                         update_qtd_bombs(t, u, margin + (u * (side_square + space_square)),
                                          margin + (t * (side_square + space_square)), [])
 
-            text = font_win.render("YOU WON!", True, GREEN)
-            screen.blit(text,
-                        (size[0] // 2 - (text.get_rect().width // 2), size[1] // 2 - text.get_rect().height * 5))
+            pygame.time.wait(1500)
+            surface = pygame.display.set_mode(size)       
+            surface.fill(MINT_GREEN)
+            pygame.display.flip()
+
+            victory_text = font_standard.render("VICTORY!", True, DARK_GREEN)
+            screen.blit(victory_text, (size[0] // 2 - (victory_text.get_rect().width // 2),
+                                       size[1] // 2 - text.get_rect().height * 5.5))
+
             end()
 
         def finished_flag():
-            text = font_flag.render("Flags over!", True, RED)
-            screen.blit(text,
-                        (size[0] // 2 - (text.get_rect().width // 2), size[1] // 2 - (text.get_rect().height // 2)))
+            pygame.time.wait(1500)
+            surface = pygame.display.set_mode(size)       
+            surface.fill(MINT_GREEN)
+            pygame.display.flip()  
+            flag_text = font_standard.render("FLAGS OVER", True, RED)
+            screen.blit(flag_text,
+                        (size[0] // 2 - (flag_text.get_rect().width // 2),
+                         size[1 // 2] - flag_text.get_rect().height * 5.5))
+            
             end()
 
         def end():
             pygame.display.update()
-            pygame.time.wait(1000)
+            pygame.time.wait(4000)
             exit()
             pygame.quit()
 
@@ -169,7 +199,7 @@ class Game:
                                     flags += 1
                                     if field[row][col]:
                                         corrects -= 1
-                                    pygame.draw.rect(screen, BLUE, (margin + (side_square * col) + (space_square * col),
+                                    pygame.draw.rect(screen, MINT, (margin + (side_square * col) + (space_square * col),
                                                                     margin + (side_square * row) + (space_square * row),
                                                                     side_square, side_square))
                                     pygame.display.update()
